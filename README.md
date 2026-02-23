@@ -1,16 +1,19 @@
-# 🕌 MIMBAR
-### Mosque Integrated Mapping for Building Acoustic Recommendations
+# 🔊 SONA
+### Spatial Outdoor Noise & Acoustics
 
-MIMBAR is an open-source GIS-based tool for analyzing and recommending 
-sound system specifications for mosques and musholas in Indonesia.
+SONA is an open-source GIS-based urban acoustic planning tool.
+Given a geographic area, SONA fetches points of interest from OpenStreetMap,
+classifies the urban environment, estimates outdoor acoustic conditions,
+and recommends appropriate sound system specifications.
 
-Given an area, MIMBAR pulls mosque locations from OpenStreetMap, 
-classifies the urban environment, estimates acoustic conditions, 
-and recommends appropriate speaker specifications — so every adzan 
-reaches its intended area clearly, without noise pollution.
+## Use Cases
+- Public address systems in dense urban areas
+- Outdoor venue acoustic planning
+- Urban noise impact assessment
+- Sound system specification for community facilities
 
 ## Features (Roadmap)
-- [ ] OSM mosque/mushola data fetcher
+- [ ] OSM data fetcher (points of interest + urban morphology)
 - [ ] Urban area classifier (residential, commercial, open field, etc.)
 - [ ] Noise floor estimator from road network
 - [ ] Acoustic propagation estimator
@@ -19,7 +22,7 @@ reaches its intended area clearly, without noise pollution.
 - [ ] Sound energy distribution visualization
 
 ## Pilot Area
-Jakarta / Jabodetabek
+Jakarta / Jabodetabek, Indonesia
 
 ## Tech Stack
 Python 3.12 · osmnx · geopandas · folium · streamlit · scipy
