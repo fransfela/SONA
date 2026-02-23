@@ -93,9 +93,10 @@ def fetch_poi(
     existing = [c for c in cols_priority if c in gdf.columns]
     gdf = gdf[existing].copy().reset_index()
 
-    # Add derived fields
-    gdf["lat"]       = gdf.geometry.centroid.y
-    gdf["lon"]       = gdf.geometry.centroid.x
+    # Add derived fields — reproject to UTM 48S for accurate centroid
+    gdf_projected    = gdf.to_crs(epsg=32748)
+    gdf["lat"]       = gdf_projected.geometry.centroid.to_crs(epsg=4326).y
+    gdf["lon"]       = gdf_projected.geometry.centroid.to_crs(epsg=4326).x
     gdf["area_name"] = area_name
     gdf["poi_type"]  = poi_type
 
@@ -196,12 +197,41 @@ def summary(gdf: gpd.GeoDataFrame) -> None:
         print(f"   Named entries : {named} / {len(gdf)}")
     print("──────────────────────────────────────────────\n")
 
+def inspect_poi(gdf: gpd.GeoDataFrame) -> None:
+    """Detailed inspection of fetched POI data."""
+    print("\n── SONA POI Inspection ───────────────────────")
+    print(f"   Total          : {len(gdf)}")
+
+    # Element type breakdown (node = point, way = polygon building)
+    if "element_type" in gdf.columns:
+        print(f"\n   By element type:")
+        print(gdf["element_type"].value_counts().to_string())
+
+    # Amenity tag breakdown
+    if "amenity" in gdf.columns:
+        print(f"\n   By amenity tag:")
+        print(gdf["amenity"].value_counts().to_string())
+
+    # Building tag breakdown
+    if "building" in gdf.columns:
+        print(f"\n   By building tag:")
+        print(gdf["building"].value_counts().to_string())
+
+    # Name completeness
+    if "name" in gdf.columns:
+        named = gdf["name"].notna().sum()
+        print(f"\n   Named          : {named} / {len(gdf)} ({named/len(gdf)*100:.1f}%)")
+
+    # Geographic spread
+    print(f"\n   Lat range      : {gdf['lat'].min():.4f} → {gdf['lat'].max():.4f}")
+    print(f"   Lon range      : {gdf['lon'].min():.4f} → {gdf['lon'].max():.4f}")
+    print("──────────────────────────────────────────────\n")
 
 if __name__ == "__main__":
     # Test 1: fetch mosques di Jakarta Pusat
     gdf = fetch_poi(area_name="jakarta_pusat", poi_type="mosque")
     summary(gdf)
-    print(gdf[["name", "lat", "lon"]].head(10))
+    inspect_poi(gdf)
 
     # Test 2: fetch urban context
     context = fetch_urban_context(area_name="jakarta_pusat")
